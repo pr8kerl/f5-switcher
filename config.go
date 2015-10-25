@@ -6,19 +6,25 @@ import (
 )
 
 var (
-	config  Config
+	cfg     Config
 	cfgfile string = "config.json"
 )
 
 type Config struct {
-	F5config    F5 `json:"f5"`
-	Webconfig   WebService `json:"webservice"`
-	Groups      []Group  `json:"groups"`
+	F5config  Device     `json:"f5"`
+	Webconfig WebService `json:"webservice"`
+	Groups    []Group    `json:"groups"`
+}
+
+type Device struct {
+	Hostname string
+	Username string
+	Password string
 }
 
 type WebService struct {
-	BindAddress string   `json:"address"`
-	BindPort    int      `json:"port"`
+	BindAddress string `json:"address"`
+	BindPort    int    `json:"port"`
 }
 
 type Pool struct {
@@ -32,19 +38,20 @@ type Group struct {
 	Pools []Pool `json:"pools"`
 }
 
-func InitialiseConfig(cfg string) (err error) {
+func InitialiseConfig(c string) (err error) {
 
 	// read in json file
-	dat, err := ioutil.ReadFile(cfg)
+	dat, err := ioutil.ReadFile(c)
 	if err != nil {
 		return err
 	}
 
 	// convert json to config struct
-	err = json.Unmarshal(dat, &config)
+	err = json.Unmarshal(dat, &cfg)
 	if err != nil {
 		return err
 	}
 
 	return nil
+
 }

@@ -11,19 +11,20 @@ import (
 
 var (
 	bindaddress = "127.0.0.1:5000"
+	f5          *F5.Device
 )
 
 func init() {
 	// setup config
 	InitialiseConfig(cfgfile)
-	if config.BindAddress != "" {
-		if config.BindPort > 0 {
-			bindaddress = fmt.Sprintf("%s:%d", config.BindAddress, config.BindPort)
+	if cfg.Webconfig.BindAddress != "" {
+		if cfg.Webconfig.BindPort > 0 {
+			bindaddress = fmt.Sprintf("%s:%d", cfg.Webconfig.BindAddress, cfg.Webconfig.BindPort)
 		} else {
-			bindaddress = fmt.Sprintf("%s:5000", config.BindAddress)
+			bindaddress = fmt.Sprintf("%s:5000", cfg.Webconfig.BindAddress)
 		}
 	}
-  f5 := F5.New(&config)
+	f5 = F5.New(cfg.F5config.Hostname, cfg.F5config.Username, cfg.F5config.Password)
 }
 
 func main() {
@@ -37,14 +38,13 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(SetJellyBeans())
 
+	r.GET("/", index)
+
 	api := r.Group("/api")
 	{
 		api.GET("/group", showGroup)
 		//	api.POST("/group", postGroup)
 	}
-
-  // init napping session
-  InitSession()
 
 	r.Run(bindaddress)
 
@@ -62,4 +62,3 @@ func SetJellyBeans() gin.HandlerFunc {
 		c.Next()
 	}
 }
-

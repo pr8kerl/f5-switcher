@@ -3,78 +3,88 @@ package F5
 import (
 	"crypto/tls"
 	"encoding/json"
-        "github.com/jmcvetta/napping"
-        "net/http"
-        "net/url"
-        "log"
+	"github.com/jmcvetta/napping"
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
+	"errors"
 )
 
 var (
-        sessn   napping.Session
-        tsport  http.Transport
-        clnt    http.Client
-        headers http.Header
-        debug   bool
+	sessn   napping.Session
+	tsport  http.Transport
+	clnt    http.Client
+	headers http.Header
+	debug   bool
 )
 
 const (
-        GET = iota
-        POST
-        PUT
-        PATCH
-        DELETE
+	GET = iota
+	POST
+	PUT
+	PATCH
+	DELETE
 )
 
-type F5 struct {
-	Hostname   		string
-	Username      string
-	Password      string
+type httperr struct {
+	Message string
+	Errors  []struct {
+		Resource string
+		Field    string
+		Code     string
+	}
 }
 
-func New(config *Config) *F5 {
-	f := F5{Hostname: config.F5.Hostname, Username: config.F5.Username, Passwd: config.F5.Passwd}
-  f.InitSession()
+type Device struct {
+	Hostname string
+	Username string
+	Password string
+}
+
+func New(host string, username string, pwd string) *Device {
+	f := Device{Hostname: host, Username: username, Password: pwd}
+	f.InitSession()
 	return &f
 }
 
-func (f *F5) InitSession() {
+func (f *Device) InitSession() {
 
-        // REST connection setup
-        tsport = http.Transport{
-                TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-        }
-        clnt = http.Client{Transport: &tsport}
-        headers = make(http.Header)
+	// REST connection setup
+	tsport = http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	clnt = http.Client{Transport: &tsport}
+	headers = make(http.Header)
 
-        //
-        // Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
-        // can also be configured on a per-request basis when using Send().
-        //
-        sessn = napping.Session{
-                Client:   &clnt,
-                Log:      debug,
-                Userinfo: url.UserPassword(f.Username, f.Passwd),
-                Header:   &headers,
-        }
-
-}
-
-func (f5 *F5) GetVirtual(vname string) (error, *LBVirtual) {
-
-        vname = strings.Replace(vname, "/", "~", -1)
-        u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
-        res := LBVirtual{}
-
-        err, resp := sendRequest(u, GET, &sessn, nil, &res)
-        if err != nil {
-                log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
-        }
-        return nil, &res
+	//
+	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
+	// can also be configured on a per-request basis when using Send().
+	//
+	sessn = napping.Session{
+		Client:   &clnt,
+		Log:      debug,
+		Userinfo: url.UserPassword(f.Username, f.Password),
+		Header:   &headers,
+	}
 
 }
 
+func (f *Device) GetVirtual(vname string) (error, *LBVirtual) {
 
-func (f *F5) sendRequest(u string, method int, sess *napping.Session, pload interface{}, res interface{}) (error, *napping.Response) {
+	vname = strings.Replace(vname, "/", "~", -1)
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
+	res := LBVirtual{}
+
+	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
+	if err != nil {
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+	}
+	return nil, &res
+
+}
+
+func (f *Device) SendRequest(u string, method int, sess *napping.Session, pload interface{}, res interface{}) (error, *napping.Response) {
 
 	//
 	// Send request to server
@@ -96,7 +106,7 @@ func (f *F5) sendRequest(u string, method int, sess *napping.Session, pload inte
 	case PATCH:
 		resp, err = sess.Patch(u, &pload, &res, &e)
 	case DELETE:
-		resp, err = sess.Delete(u, &res, &e)
+		resp, err = sess.Delete(u, nil, &res, &e)
 	}
 
 	if err != nil {
@@ -113,13 +123,12 @@ func (f *F5) sendRequest(u string, method int, sess *napping.Session, pload inte
 	}
 }
 
-func (f *F5) PrintResponse(input interface{}) {
+func (f *Device) PrintResponse(input interface{}) {
 
 	jsonresp, err := json.MarshalIndent(&input, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(jsonresp))
+	log.Println(string(jsonresp))
 
 }
-

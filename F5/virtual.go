@@ -2,8 +2,6 @@ package F5
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"strings"
 	//	"github.com/kr/pretty"
@@ -63,10 +61,10 @@ type LBVirtuals struct {
 	Items []LBVirtual
 }
 
-func (f *F5) ShowVirtual(vname string) {
+func (f *Device) ShowVirtual(vname string) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
 	res := LBVirtual{}
 
 	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
@@ -77,24 +75,26 @@ func (f *F5) ShowVirtual(vname string) {
 
 }
 
-func (f *F5) UpdateVirtual(vname string) {
+func (f *Device) UpdateVirtual(vname string) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + vname
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname
 	res := LBVirtual{}
 	body := json.RawMessage{}
 
 	// read in json file
+/*
 	dat, err := ioutil.ReadFile(f5Input)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// convert json to a virtual struct
-	err = json.Unmarshal(dat, &body)
+	err := json.Unmarshal(dat, &body)
 	if err != nil {
 		log.Fatal(err)
 	}
+*/
 
 	// put the request
 	err, resp := f.SendRequest(u, PUT, &sessn, &body, &res)
@@ -103,4 +103,3 @@ func (f *F5) UpdateVirtual(vname string) {
 	}
 	f.PrintResponse(&res)
 }
-
