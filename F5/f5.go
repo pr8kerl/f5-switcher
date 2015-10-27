@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"strings"
 	"errors"
 )
 
@@ -67,20 +66,6 @@ func (f *Device) InitSession() {
 		Userinfo: url.UserPassword(f.Username, f.Password),
 		Header:   &headers,
 	}
-
-}
-
-func (f *Device) GetVirtual(vname string) (error, *LBVirtual) {
-
-	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
-	res := LBVirtual{}
-
-	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
-	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
-	}
-	return nil, &res
 
 }
 

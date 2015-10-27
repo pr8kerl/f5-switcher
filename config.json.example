@@ -2,25 +2,25 @@
 					"f5": {
 									"hostname": "192.168.0.100",
 									"username": "admin",
-									"passwd": "password"
+									"passwd": "admin"
 					},
 					"webservice": {
 									"address": "127.0.0.1",
-									"port": 5000,
+									"port": 5000
 					},
 					"groups": [
 					  {
 										"name": "archie-sit",
 										"pools": [
 											{
-														"name": "/DMZ/autmgsblsit",
+														"name": "/DMZ/audmzsblsitweb-80-pool",
 										        "blue": [
-																		"/DMZ/audmzsblweb01",
-																		"/DMZ/audmzsblweb02",
+																		"/DMZ/audmzsblsitweb-01:80",
+																		"/DMZ/audmzsblsitweb-02:80"
 														],
 														"green": [
-																		"/DMZ/audmzsblweb01",
-																		"/DMZ/audmzsblweb02",
+																		"/DMZ/audmzsblsitweb-03:80",
+																		"/DMZ/audmzsblsitweb-04:80"
 													  ]
 											}
 										]

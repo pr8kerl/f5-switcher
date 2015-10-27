@@ -17,9 +17,9 @@ type Config struct {
 }
 
 type Device struct {
-	Hostname string
-	Username string
-	Password string
+	Hostname string `json:"hostname"`
+	Username string `json:"username"`
+	Password string `json:"passwd"`
 }
 
 type WebService struct {

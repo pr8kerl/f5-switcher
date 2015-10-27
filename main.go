@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pr8kerl/f5-switcher/F5"
 	"net/http"
-	//	"os"
+	"os"
 	//	"time"
 )
 
@@ -16,7 +16,11 @@ var (
 
 func init() {
 	// setup config
-	InitialiseConfig(cfgfile)
+	err := InitialiseConfig(cfgfile)
+	if err != nil {
+		fmt.Printf("error reading config: %s\n", err)
+		os.Exit(1)
+	}
 	if cfg.Webconfig.BindAddress != "" {
 		if cfg.Webconfig.BindPort > 0 {
 			bindaddress = fmt.Sprintf("%s:%d", cfg.Webconfig.BindAddress, cfg.Webconfig.BindPort)

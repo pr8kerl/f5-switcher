@@ -95,6 +95,9 @@ func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
+  log.Printf("in ShowPoolMembers: %s", u)
+  f.PrintResponse(f)
+
 	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
