@@ -27,15 +27,20 @@ type WebService struct {
 	BindPort    int    `json:"port"`
 }
 
+type PoolGroup struct {
+	Name  string `json:"name"`
+	Blue  Pool   `json:"blue"`
+	Green Pool   `json:"green"`
+}
 type Pool struct {
-	Name  string   `json:"name"`
-	Blue  []string `json:"blue"`
-	Green []string `json:"green"`
+	Members []string `json:"members"`
+	Active  int      `json:"active"`
 }
 
 type Group struct {
-	Name  string `json:"name"`
-	Pools []Pool `json:"pools"`
+	Name  string      `json:"name"`
+	Pools []PoolGroup `json:"pools"`
+	State string
 }
 
 func InitialiseConfig(c string) (err error) {

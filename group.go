@@ -26,55 +26,61 @@ func showGroup(c *gin.Context) {
 
 	for _, group := range cfg.Groups {
 		log.Printf("processing group %s\n", group.Name)
-    var blue int = 0
-    var green int = 0
+		var gblue int = 0
+		var ggreen int = 0
 
-// if val, ok := dict["foo"]; ok { //do something here }
-
+		// if val, ok := dict["foo"]; ok { //do something here }
 
 		for _, pool := range group.Pools {
 			log.Printf("processing pool %s\n", pool.Name)
-      
+
 			err, members := f5.ShowPoolMembers(pool.Name)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "message": err})
 			}
 
-      for _, member := range members {
-        // check each member - whether blue or green - maybe use a map here?
-        
-        if member.session == "monitor-enabled" {
-          for _, bmember range pool.Blue {
-            if bmember == member.fullPath {
-              blue++
-              break
-            }
-          }
-          for _, bmember range pool.Green {
-            if bmember == member.fullPath {
-              blue++
-              break
-            }
-          }
+			for _, member := range members.Items {
+				// check each member - whether blue or green - maybe use a map here?
 
-        }
+				if member.Session == "monitor-enabled" {
+					for _, bmember := range pool.Blue.Members {
+						if bmember == member.FullPath {
+							gblue++
+							break
+						}
+					}
+					for _, bmember := range pool.Green.Members {
+						if bmember == member.FullPath {
+							ggreen++
+							break
+						}
+					}
 
-      }
+				}
 
-			if err != nil {
-				log.Printf("error %s\n", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "message": err})
-			} else {
-				c.JSON(http.StatusOK, gin.H{"status": 200, "members": members})
 			}
+
+			state := Poolstate{}
+			if gblue > 0 {
+				state.MemberCount = gblue
+				state.Status = "blue"
+			} else if ggreen > 0 {
+				state.MemberCount = ggreen
+				state.Status = "green"
+			}
+			if (gblue > 0) && (ggreen > 0) {
+				state.MemberCount = -1
+				state.Status = "orange"
+				c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "pool state": state})
+			}
+			c.JSON(http.StatusOK, gin.H{"status": 200, "pool state": state})
+
 		}
 	}
 
 }
 
-struct Poolstate {
-  ExpectedCount int
-  ActiveCount int
-  State string
+type Poolstate struct {
+	MemberCount int
+	Status      string
 }
-
