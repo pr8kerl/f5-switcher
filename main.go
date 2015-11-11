@@ -42,12 +42,13 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(SetJellyBeans())
 
-	r.GET("/", index)
+	//r.GET("/", index)
+	r.StaticFS("/public", http.Dir("public/"))
 
 	api := r.Group("/api")
 	{
 		api.GET("/group", showGroup)
-		//	api.POST("/group", postGroup)
+		//		api.PUT("/group", putGroup)
 	}
 
 	r.Run(bindaddress)
