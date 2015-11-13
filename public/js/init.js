@@ -19,7 +19,7 @@ $.ajax({
 var GroupsVue = new Vue({
             el: '#app',
             data: {
-                Groups: groups
+                response: groups
             },
             methods: {
 

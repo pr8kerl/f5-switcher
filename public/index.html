@@ -33,10 +33,15 @@
       </div>
 
 			<div id="app">
-        <div class="row center" v-for="group in Groups">
-					<p>
-          {{ group }}
-          </p>
+        <div class="row center" v-for="group in response.data">
+					<table class="responsive-table centered highlight">
+					  <tbody v-for="group in response.data">
+						<tr>
+						  <td>{{ group.name }}</td>
+						  <td>{{ group.state }}</td>
+						</tr>
+						</tbody>
+          </table>
         </div>
 </div>
       <div class="row center">
