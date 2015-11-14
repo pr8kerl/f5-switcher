@@ -6,41 +6,40 @@ import (
 	"net/http"
 )
 
-/*
-func postGroup(c *gin.Context) {
-	var json SMS
+func putGroup(c *gin.Context) {
+	var json GroupPutData
 	if c.BindJSON(&json) == nil {
-		if json.Mobile == "" || json.Message == "" {
+		if json.State == "" || json.Name == "" {
 			c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "message": "invalid message format"})
 		} else {
-			msgs <- json
 			c.JSON(http.StatusOK, gin.H{"status": 200, "message": "message received"})
 		}
 	}
 }
-*/
 
 func showGroup(c *gin.Context) {
 
 	log.Printf("processing groups\n")
 
-	for gindex, group := range cfg.Groups {
+	for gkey, group := range cfg.Groups {
 
-		log.Printf("processing group %s\n", group.Name)
+		log.Printf("processing group %s\n", gkey)
 		var gblue int = 0
 		var ggreen int = 0
 
 		// if val, ok := dict["foo"]; ok { //do something here }
 
-		for pindex, pool := range group.Pools {
+		for pkey, pool := range group.Pools {
 
-			log.Printf("processing pool %s\n", pool.Name)
+			log.Printf("processing pool %s\n", pkey)
 			var pblue int = 0
 			var pgreen int = 0
 
-			err, members := f5.ShowPoolMembers(pool.Name)
+			err, resp, members := f5.ShowPoolMembers(pkey)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "message": err})
+				group.Pools[pkey] = group.Pools[pkey].SetError(resp.Message)
+				//				c.JSON(http.StatusInternalServerError, gin.H{"error": err, "message": resp.Message})
+				continue
 			}
 
 			for _, member := range members.Items {
@@ -67,24 +66,24 @@ func showGroup(c *gin.Context) {
 			}
 
 			if pblue > 0 {
-				group.Pools[pindex].State = "blue"
+				group.Pools[pkey] = group.Pools[pkey].SetState("blue")
 			} else if ggreen > 0 {
-				group.Pools[pindex].State = "green"
+				group.Pools[pkey] = group.Pools[pkey].SetState("green")
 			}
 			if (pblue > 0) && (pgreen > 0) {
-				group.Pools[pindex].State = "orange"
+				group.Pools[pkey] = group.Pools[pkey].SetState("orange")
 				//c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "pool state": state})
 			}
 			//			c.JSON(http.StatusOK, gin.H{"status": 200, "pool state": state})
 
 		} // end range group.Pools
 		if gblue > 0 {
-			cfg.Groups[gindex].State = "blue"
+			cfg.Groups[gkey] = cfg.Groups[gkey].SetState("blue")
 		} else if ggreen > 0 {
-			cfg.Groups[gindex].State = "green"
+			cfg.Groups[gkey] = cfg.Groups[gkey].SetState("green")
 		}
 		if (gblue > 0) && (ggreen > 0) {
-			cfg.Groups[gindex].State = "orange"
+			cfg.Groups[gkey] = cfg.Groups[gkey].SetState("orange")
 		}
 
 	} // end range cfg.Groups

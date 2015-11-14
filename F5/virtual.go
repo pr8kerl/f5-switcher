@@ -69,7 +69,7 @@ func (f *Device) ShowVirtual(vname string) {
 
 	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		log.Fatalf("%s : %s\n", resp.Status, err)
 	}
 	f.PrintResponse(&res)
 
@@ -83,23 +83,23 @@ func (f *Device) UpdateVirtual(vname string) {
 	body := json.RawMessage{}
 
 	// read in json file
-/*
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
+	/*
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	// convert json to a virtual struct
-	err := json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
-*/
+		// convert json to a virtual struct
+		err := json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
 
 	// put the request
 	err, resp := f.SendRequest(u, PUT, &sessn, &body, &res)
 	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		log.Fatalf("%s : %s\n", resp.Status, err)
 	}
 	f.PrintResponse(&res)
 }

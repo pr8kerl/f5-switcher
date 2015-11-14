@@ -80,14 +80,14 @@ func (f *Device) ShowPool(pname string) (error, *LBPool) {
 
 	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		log.Fatalf("%s : %s\n", resp.Status, err)
 		return err, nil
 	} else {
 		return nil, &res
 	}
 }
 
-func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
+func (f *Device) ShowPoolMembers(pname string) (error, *Response, *LBPoolMembers) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
 	//      member := strings.Replace(pmember, "/", "~", -1)
@@ -95,16 +95,12 @@ func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
-  log.Printf("in ShowPoolMembers: %s", u)
-  f.PrintResponse(f)
-
 	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
-		return err, nil
+		return err, resp, nil
 	} else {
-		f.PrintResponse(&res.Items)
-		return nil, &res
+		//		f.PrintResponse(&res.Items)
+		return nil, resp, &res
 	}
 
 }

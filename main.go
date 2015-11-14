@@ -48,7 +48,7 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.GET("/group", showGroup)
-		//		api.PUT("/group", putGroup)
+		api.PUT("/group", putGroup)
 	}
 
 	r.Run(bindaddress)

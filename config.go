@@ -11,9 +11,9 @@ var (
 )
 
 type Config struct {
-	F5config  Device     `json:"f5"`
-	Webconfig WebService `json:"webservice"`
-	Groups    []Group    `json:"groups"`
+	F5config  Device           `json:"f5"`
+	Webconfig WebService       `json:"webservice"`
+	Groups    map[string]Group `json:"groups"`
 }
 
 type Device struct {
@@ -28,15 +28,34 @@ type WebService struct {
 }
 
 type Pool struct {
-	Name  string   `json:"name"`
 	Blue  []string `json:"blue"`
 	Green []string `json:"green"`
 	State string   `json:"state"`
+	Error string   `json:"error"`
+}
+
+func (t Pool) SetState(s string) Pool {
+	t.State = s
+	return t
+}
+
+func (t Pool) SetError(s string) Pool {
+	t.Error = s
+	return t
 }
 
 type Group struct {
+	Pools map[string]Pool `json:"pools"`
+	State string          `json:"state"`
+}
+
+func (t Group) SetState(s string) Group {
+	t.State = s
+	return t
+}
+
+type GroupPutData struct {
 	Name  string `json:"name"`
-	Pools []Pool `json:"pools"`
 	State string `json:"state"`
 }
 

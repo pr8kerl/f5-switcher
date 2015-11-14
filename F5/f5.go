@@ -3,11 +3,11 @@ package F5
 import (
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"github.com/jmcvetta/napping"
 	"log"
 	"net/http"
 	"net/url"
-	"errors"
 )
 
 var (
@@ -41,6 +41,11 @@ type Device struct {
 	Password string
 }
 
+type Response struct {
+	Status  int
+	Message string
+}
+
 func New(host string, username string, pwd string) *Device {
 	f := Device{Hostname: host, Username: username, Password: pwd}
 	f.InitSession()
@@ -69,42 +74,43 @@ func (f *Device) InitSession() {
 
 }
 
-func (f *Device) SendRequest(u string, method int, sess *napping.Session, pload interface{}, res interface{}) (error, *napping.Response) {
+func (f *Device) SendRequest(u string, method int, sess *napping.Session, pload interface{}, res interface{}) (error, *Response) {
 
 	//
 	// Send request to server
 	//
 	e := httperr{}
 	var (
-		err  error
-		resp *napping.Response
+		err   error
+		nresp *napping.Response
 	)
 	sess.Log = debug
 
 	switch method {
 	case GET:
-		resp, err = sess.Get(u, nil, &res, &e)
+		nresp, err = sess.Get(u, nil, &res, &e)
 	case POST:
-		resp, err = sess.Post(u, &pload, &res, &e)
+		nresp, err = sess.Post(u, &pload, &res, &e)
 	case PUT:
-		resp, err = sess.Put(u, &pload, &res, &e)
+		nresp, err = sess.Put(u, &pload, &res, &e)
 	case PATCH:
-		resp, err = sess.Patch(u, &pload, &res, &e)
+		nresp, err = sess.Patch(u, &pload, &res, &e)
 	case DELETE:
-		resp, err = sess.Delete(u, nil, &res, &e)
+		nresp, err = sess.Delete(u, nil, &res, &e)
 	}
 
+	var resp = Response{Status: nresp.Status(), Message: e.Message}
 	if err != nil {
-		return err, resp
+		return err, &resp
 	}
-	if resp.Status() == 401 {
-		return errors.New("unauthorised - check your username and passwd"), resp
+	if nresp.Status() == 401 {
+		return errors.New("unauthorised - check your username and passwd"), &resp
 	}
-	if resp.Status() >= 300 {
-		return errors.New(e.Message), resp
+	if nresp.Status() >= 300 {
+		return errors.New(e.Message), &resp
 	} else {
 		// all is good in the world
-		return nil, resp
+		return nil, &resp
 	}
 }
 
