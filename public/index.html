@@ -16,6 +16,7 @@
   <nav class="light-blue lighten-1" role="navigation">
 					<div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">
 													<i class="material-icons">autorenew</i></a>
+									<!--
       <ul class="right hide-on-med-and-down">
         <li><a href="#">Navbar Link</a></li>
       </ul>
@@ -24,6 +25,7 @@
         <li><a href="#">Navbar Link</a></li>
       </ul>
       <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+-->
     </div>
   </nav>
 
@@ -31,22 +33,31 @@
     <div class="container">
       <br><br>
       <h1 class="header center orange-text">flick the switch!</h1>
-      <div class="row center">
-        <h5 class="header col s12 light">manipulate some F5 objects</h5>
+			<div class="row center">
+        <h5 class="header col s12 light">pick a stack to switch</h5>
       </div>
+
 
 			<div id="app" class="section">
 
-        <div v-for="(mkey, mgroup) in response.data">
+        <div class=" row center" v-for="(mkey, mgroup) in response.data">
 
 								<!-- Modal {{ mkey }} Structure -->
-								<div id="{{ mkey }}" class="modal modal-fixed-footer">
+								<div id="{{ mkey }}" class="modal modal-fixed-footer" v-model="mgroup">
                 <div class="modal-content">
-												<h4>Modal {{ mkey }} Header</h4>
+												<h4>Switch {{ mkey }}!</h4>
 												<p>A bunch of text about {{ mkey }}</p>
+												<!--
+												<p>{{ response.data[ {{ mkey }} ].pools["/DMZ/audmzsblsitweb-80-pool"].blue }}</p>
+												<ul class="collection" v-for="pool in response.data[{{ mkey }}].pools">
+																<li class="collection-item">pool: {{ pool }}</li>
+												</ul>
+                        -->
                 </div>
                 <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn orange">Cancel</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn blue">Blue</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Green</a>
                 </div>
                 </div>
         </div>
@@ -58,16 +69,14 @@
         <thead>
           <tr>
               <th data-field="stack">Stack Name</th>
-              <th data-field="state">Current State</th>
               <th data-field="edit"></th>
           </tr>
         </thead>
 
         <tbody v-for="(gkey, group) in response.data">
-          <tr>
+          <tr v-bind:class="group.state">
 									<td>{{ gkey }}</td>
-									<td>{{ group.state }}</td>
-                  <td><a class="btn-flat waves-effect waves-light orange modal-trigger" href="#{{ gkey }}">Change {{ gkey }}</a></td>
+									<td class="right"><a class="btn-flat waves-effect waves-light white modal-trigger tooltipped" href="#{{ gkey }}" data-position="left" data-delay="50" data-tooltip="switch stack {{ gkey }}"><i class="material-icons">autorenew</i></a></td>
           </tr>
 				</tbody>
 
@@ -139,7 +148,7 @@
 
     <div class="footer-copyright">
       <div class="container">
-      Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+      Made with <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
       </div>
     </div>
   </footer>
