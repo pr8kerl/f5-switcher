@@ -2,41 +2,31 @@
   $(function(){
 
     $('.button-collapse').sideNav();
+		console.log("ready");
 
   }); // end of document ready
 })(jQuery); // end of jQuery name space
 
 
-var groups;
-$.ajax({
-            url: '/api/group',
-            method: 'GET',
-            success: function (data) {
+var vm = new Vue({
+	el: '#app',
+		data: {
+			response: ''
+		},
+    ready: function () {
 
-                groups = data;
-//                alert(JSON.stringify(data));
-								for (var key in data.data)
-                {
-                  console.log(data.data[key]);
-                }
-
-              var GroupsVue = new Vue({
-                el: '#app',
-                data: {
-                    response: groups
-                },
-                methods: {
-
-                },
-                ready: function () {
-                  $('.modal-trigger').leanModal();
-									$('.tooltipped').tooltip({delay: 50});
-                }
-              });
-
-            },
-            error: function (error) {
-//                alert(JSON.stringify(error));
-            }
+      // GET request
+      this.$http.get('/api/group', function (data, status, request) {
+          // set data on vm
+          this.$set('response', data)
+		      console.log("ready ready");
+      }).error(function (data, status, request) {
+          // handle error
+					console.log(status)
+      })
+		$('.modal-trigger').leanModal();
+		$('.tooltipped').tooltip({delay: 50});
+		}
 });
+
 

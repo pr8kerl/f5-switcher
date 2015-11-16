@@ -40,27 +40,6 @@
 
 			<div id="app" class="section">
 
-        <div class=" row center" v-for="(mkey, mgroup) in response.data">
-
-								<!-- Modal {{ mkey }} Structure -->
-								<div id="{{ mkey }}" class="modal modal-fixed-footer" v-model="mgroup">
-                <div class="modal-content">
-												<h4>Switch {{ mkey }}!</h4>
-												<p>A bunch of text about {{ mkey }}</p>
-												<!--
-												<p>{{ response.data[ {{ mkey }} ].pools["/DMZ/audmzsblsitweb-80-pool"].blue }}</p>
-												<ul class="collection" v-for="pool in response.data[{{ mkey }}].pools">
-																<li class="collection-item">pool: {{ pool }}</li>
-												</ul>
-                        -->
-                </div>
-                <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn orange">Cancel</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn blue">Blue</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Green</a>
-                </div>
-                </div>
-        </div>
 
 			  <template v-if="response">
         <div class="row center col s12">
@@ -76,7 +55,7 @@
         <tbody v-for="(gkey, group) in response.data">
           <tr v-bind:class="group.state">
 									<td>{{ gkey }}</td>
-									<td class="right"><a class="btn-flat waves-effect waves-light white modal-trigger tooltipped" href="#{{ gkey }}" data-position="left" data-delay="50" data-tooltip="switch stack {{ gkey }}"><i class="material-icons">autorenew</i></a></td>
+									<td class="right"><a class="btn-flat waves-effect waves-light white modal-trigger tooltipped" href="#{{ gkey }}" data-position="left" data-delay="50" data-tooltip="switch stack {{ gkey }}" onClick="$('#{{ gkey }}').openModal();"><i class="material-icons">autorenew</i></a></td>
           </tr>
 				</tbody>
 
@@ -98,6 +77,28 @@
         </div>
         </div>
 				</template>
+
+        <div class=" row center" v-for="(mkey, mgroup) in response.data">
+
+								<!-- Modal {{ mkey }} Structure -->
+								<div id="{{ mkey }}" class="modal modal-fixed-footer">
+                <div class="modal-content">
+												<h4>Switch {{ mkey }}!</h4>
+												<p>A bunch of text about {{ mkey }}</p>
+												<!--
+												<p>{{ response.data[ {{ mkey }} ].pools["/DMZ/audmzsblsitweb-80-pool"].blue }}</p>
+												<ul class="collection" v-for="pool in response.data[{{ mkey }}].pools">
+																<li class="collection-item">pool: {{ pool }}</li>
+												</ul>
+                        -->
+                </div>
+                <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn orange">Cancel</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn blue">Blue</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Green</a>
+                </div>
+                </div>
+        </div>
 
 
      </div>
@@ -156,8 +157,9 @@
 
   <!--  Scripts-->
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script src="/public/js/materialize.js"></script>
-	<script src="/public/js/vue.js"></script>
+	<script src="js/materialize.js"></script>
+	<script src="js/vue.js"></script>
+	<script src="js/vue-resource.min.js"></script>
 	<script src="js/init.js"></script>
 
   </body>
