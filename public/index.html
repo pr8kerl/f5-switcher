@@ -78,24 +78,19 @@
         </div>
 				</template>
 
-        <div class=" row center" v-for="(mkey, mgroup) in response.data">
+        <div class="row" v-for="(mkey, mgroup) in response.data">
 
 								<!-- Modal {{ mkey }} Structure -->
-								<div id="{{ mkey }}" class="modal modal-fixed-footer">
+								<div id="{{ mkey }}" class="container modal modal-fixed-footer">
                 <div class="modal-content">
 												<h4>Switch {{ mkey }}!</h4>
-												<p>A bunch of text about {{ mkey }}</p>
-												<!--
-												<p>{{ response.data[ {{ mkey }} ].pools["/DMZ/audmzsblsitweb-80-pool"].blue }}</p>
-												<ul class="collection" v-for="pool in response.data[{{ mkey }}].pools">
-																<li class="collection-item">pool: {{ pool }}</li>
-												</ul>
-                        -->
+												<div v-pooler="mkey">
+												</div>
                 </div>
                 <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn orange">Cancel</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn blue">Blue</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Green</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn blue" v-on:click='updateGroup(mkey,"blue")'>Blue</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn green" v-on:click='updateGroup(mkey,"green")'>Green</a>
                 </div>
                 </div>
         </div>
