@@ -2,7 +2,7 @@
   $(function(){
 
     $('.button-collapse').sideNav();
-		console.log("ready");
+		$('.tooltipped').tooltip({delay: 50});
 
   }); // end of document ready
 })(jQuery); // end of jQuery name space
@@ -62,7 +62,6 @@ var vm = new Vue({
       this.$http.get('/api/group', function (data, status, request) {
           // set data on vm
           this.$set('response', data)
-		      console.log("ready ready");
       }).error(function (data, status, request) {
           // handle error
 					console.log(status)

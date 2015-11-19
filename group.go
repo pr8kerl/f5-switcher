@@ -12,7 +12,7 @@ func putGroup(c *gin.Context) {
 		if json.State == "" || json.Name == "" {
 			c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "message": "invalid message format"})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"status": 200, "name": json.Name})
+			c.JSON(http.StatusOK, json)
 		}
 	}
 }
