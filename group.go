@@ -7,13 +7,17 @@ import (
 )
 
 func putGroup(c *gin.Context) {
+
 	var json GroupPutData
 	if c.BindJSON(&json) == nil {
 		if json.State == "" || json.Name == "" {
 			c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "message": "invalid message format"})
-		} else {
-			c.JSON(http.StatusOK, json)
 		}
+
+		group := cfg.Groups[json.Name]
+		log.Printf("putGroup processing group: %s\n", group)
+
+		c.JSON(http.StatusOK, json)
 	}
 }
 

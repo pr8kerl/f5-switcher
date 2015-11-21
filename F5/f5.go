@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/jmcvetta/napping"
 	"log"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 )
 
 var (
-	sessn   napping.Session
+	//sessn   napping.Session
 	tsport  http.Transport
 	clnt    http.Client
 	headers http.Header
@@ -39,11 +40,24 @@ type Device struct {
 	Hostname string
 	Username string
 	Password string
+	Session  napping.Session
 }
 
 type Response struct {
 	Status  int
 	Message string
+}
+
+type LBEmptyBody struct{}
+
+type LBTransaction struct {
+	TransId int    `json:"transId"`
+	Timeout int    `json:"timeoutSeconds"`
+	State   string `json:"state"`
+}
+
+type LBTransactionState struct {
+	State string `json:"state"`
 }
 
 func New(host string, username string, pwd string) *Device {
@@ -65,7 +79,7 @@ func (f *Device) InitSession() {
 	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
 	// can also be configured on a per-request basis when using Send().
 	//
-	sessn = napping.Session{
+	f.Session = napping.Session{
 		Client:   &clnt,
 		Log:      debug,
 		Userinfo: url.UserPassword(f.Username, f.Password),
@@ -74,7 +88,43 @@ func (f *Device) InitSession() {
 
 }
 
-func (f *Device) SendRequest(u string, method int, sess *napping.Session, pload interface{}, res interface{}) (error, *Response) {
+func (f *Device) StartTransaction() (error, string) {
+
+	u := "https://" + f.Hostname + "/mgmt/tm/transaction"
+	empty := LBEmptyBody{}
+	tres := LBTransaction{}
+	err, resp := f.SendRequest(u, POST, &empty, &tres)
+	if err != nil {
+		return err, ""
+	}
+
+	log.Printf("%s : transaction %d created\n", resp.Status, tres.TransId)
+	tid := fmt.Sprintf("%d", tres.TransId)
+	// set the transaction header
+	f.Session.Header.Set("X-F5-REST-Coordination-Id", tid)
+	return nil, tid
+
+}
+
+func (f *Device) CommitTransaction(tid string) error {
+
+	// remove the transaction header first
+	f.Session.Header.Del("X-F5-REST-Coordination-Id")
+
+	u := "https://" + f.Hostname + "/mgmt/tm/transaction/" + tid
+	body := LBTransaction{State: "VALIDATING"}
+	tres := LBTransaction{}
+	err, resp := f.SendRequest(u, PATCH, &body, &tres)
+	if err != nil {
+		return err
+	}
+	log.Printf("\n%s : transaction %s committed\n", resp.Status, tid)
+
+	return nil
+
+}
+
+func (f *Device) SendRequest(u string, method int, pload interface{}, res interface{}) (error, *Response) {
 
 	//
 	// Send request to server
@@ -84,19 +134,19 @@ func (f *Device) SendRequest(u string, method int, sess *napping.Session, pload 
 		err   error
 		nresp *napping.Response
 	)
-	sess.Log = debug
+	f.Session.Log = debug
 
 	switch method {
 	case GET:
-		nresp, err = sess.Get(u, nil, &res, &e)
+		nresp, err = f.Session.Get(u, nil, &res, &e)
 	case POST:
-		nresp, err = sess.Post(u, &pload, &res, &e)
+		nresp, err = f.Session.Post(u, &pload, &res, &e)
 	case PUT:
-		nresp, err = sess.Put(u, &pload, &res, &e)
+		nresp, err = f.Session.Put(u, &pload, &res, &e)
 	case PATCH:
-		nresp, err = sess.Patch(u, &pload, &res, &e)
+		nresp, err = f.Session.Patch(u, &pload, &res, &e)
 	case DELETE:
-		nresp, err = sess.Delete(u, nil, &res, &e)
+		nresp, err = f.Session.Delete(u, nil, &res, &e)
 	}
 
 	var resp = Response{Status: nresp.Status(), Message: e.Message}

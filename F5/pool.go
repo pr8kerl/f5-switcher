@@ -1,6 +1,7 @@
 package F5
 
 import (
+	"encoding/json"
 	"log"
 	"strings"
 )
@@ -36,7 +37,7 @@ type LBPoolMembers struct {
 }
 
 // used by online/offline
-type MemberState struct {
+type LBPoolMemberState struct {
 	State   string `json:"state"`
 	Session string `json:"session"`
 }
@@ -78,7 +79,7 @@ func (f *Device) ShowPool(pname string) (error, *LBPool) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 	res := LBPool{}
 
-	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
+	err, resp := f.SendRequest(u, GET, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.Status, err)
 		return err, nil
@@ -95,12 +96,63 @@ func (f *Device) ShowPoolMembers(pname string) (error, *Response, *LBPoolMembers
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
-	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
+	err, resp := f.SendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, resp, nil
 	} else {
 		//		f.PrintResponse(&res.Items)
 		return nil, resp, &res
 	}
+
+}
+
+func (f *Device) OnlinePoolMember(pname string, mname string) error {
+
+	pmember := strings.Replace(mname, "/", "~", -1)
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	res := json.RawMessage{}
+
+	/*
+	   {"state": "user-down", "session": "user-disabled"} (Member Forced Offline in GUI)
+	   {"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
+	   {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
+	*/
+	body := LBPoolMemberState{"user-up", "user-enabled"}
+
+	// put the request
+	err, resp := f.SendRequest(u, PUT, &body, &res)
+	if err != nil {
+		return err
+	}
+	log.Printf("%s : %s online\n", resp.Status, mname)
+
+	f.PrintResponse(&res)
+	return nil
+
+}
+
+func (f *Device) OfflinePoolMember(pname string, mname string) error {
+
+	pmember := strings.Replace(mname, "/", "~", -1)
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	res := json.RawMessage{}
+
+	/*
+	   {"state": "user-down", "session": "user-disabled"} (Member Forced Offline in GUI)
+	   {"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
+	   {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
+	*/
+	body := LBPoolMemberState{"user-up", "user-disabled"}
+
+	// put the request
+	err, resp := f.SendRequest(u, PUT, &body, &res)
+	if err != nil {
+		return err
+	}
+	log.Printf("%s : %s offline\n", resp.Status, mname)
+	f.PrintResponse(&res)
+	return nil
 
 }

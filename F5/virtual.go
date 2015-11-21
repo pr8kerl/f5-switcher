@@ -67,7 +67,7 @@ func (f *Device) ShowVirtual(vname string) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
 	res := LBVirtual{}
 
-	err, resp := f.SendRequest(u, GET, &sessn, nil, &res)
+	err, resp := f.SendRequest(u, GET, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.Status, err)
 	}
@@ -97,7 +97,7 @@ func (f *Device) UpdateVirtual(vname string) {
 	*/
 
 	// put the request
-	err, resp := f.SendRequest(u, PUT, &sessn, &body, &res)
+	err, resp := f.SendRequest(u, PUT, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.Status, err)
 	}
