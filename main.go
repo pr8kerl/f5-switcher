@@ -12,6 +12,7 @@ import (
 var (
 	bindaddress = "127.0.0.1:5000"
 	f5          *F5.Device
+	appRoot     = "/public"
 )
 
 func init() {
@@ -43,7 +44,7 @@ func main() {
 	r.Use(SetJellyBeans())
 
 	//r.GET("/", index)
-	r.StaticFS("/public", http.Dir("public/"))
+	r.StaticFS(appRoot, http.Dir("public/"))
 
 	api := r.Group("/api")
 	{

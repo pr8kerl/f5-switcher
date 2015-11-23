@@ -118,7 +118,7 @@ func (f *Device) CommitTransaction(tid string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("\n%s : transaction %s committed\n", resp.Status, tid)
+	log.Printf("\n%d : transaction %s committed\n", resp.Status, tid)
 
 	return nil
 

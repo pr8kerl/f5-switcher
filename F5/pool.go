@@ -125,9 +125,9 @@ func (f *Device) OnlinePoolMember(pname string, mname string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("%s : %s online\n", resp.Status, mname)
+	log.Printf("%d : %s online\n", resp.Status, mname)
 
-	f.PrintResponse(&res)
+	//f.PrintResponse(&res)
 	return nil
 
 }
@@ -151,8 +151,8 @@ func (f *Device) OfflinePoolMember(pname string, mname string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("%s : %s offline\n", resp.Status, mname)
-	f.PrintResponse(&res)
+	log.Printf("%d : %s offline\n", resp.Status, mname)
+	//f.PrintResponse(&res)
 	return nil
 
 }

@@ -11,14 +11,52 @@ func putGroup(c *gin.Context) {
 	var json GroupPutData
 	if c.BindJSON(&json) == nil {
 		if json.State == "" || json.Name == "" {
-			c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "message": "invalid message format"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid message format"})
+		}
+	}
+
+	// start transaction
+	err, tid := f5.StartTransaction()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+	}
+
+	group := cfg.Groups[json.Name]
+	log.Printf("debug putGroup processing group %s, setting to %s\n", group, json.State)
+
+	for pkey, pool := range group.Pools {
+		log.Printf("processing pool %s\n", pkey)
+
+		for _, member := range pool.Blue {
+
+			if json.State == "blue" {
+				log.Printf("enabling %s blue member: %s\n", pkey, member)
+				f5.OnlinePoolMember(pkey, member)
+			}
+			if json.State == "green" {
+				log.Printf("disabling %s blue member: %s\n", pkey, member)
+				f5.OfflinePoolMember(pkey, member)
+			}
 		}
 
-		group := cfg.Groups[json.Name]
-		log.Printf("putGroup processing group: %s\n", group)
+		for _, member := range pool.Green {
 
-		c.JSON(http.StatusOK, json)
+			if json.State == "green" {
+				log.Printf("enabling %s green member: %s\n", pkey, member)
+				f5.OnlinePoolMember(pkey, member)
+			}
+			if json.State == "blue" {
+				log.Printf("disabling %s green member: %s\n", pkey, member)
+				f5.OfflinePoolMember(pkey, member)
+			}
+		}
 	}
+	err = f5.CommitTransaction(tid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+	}
+	showGroup(c)
+
 }
 
 func showGroup(c *gin.Context) {
