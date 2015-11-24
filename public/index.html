@@ -13,7 +13,7 @@
 </head>
 
 <body>
-  <nav class="light-blue lighten-1" role="navigation">
+  <nav class="grey darken-2" role="navigation">
 					<div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">
 													<i class="material-icons">autorenew</i></a>
 									<!--
@@ -53,9 +53,9 @@
         </thead>
 
         <tbody v-for="(gkey, group) in response.data" track-by="$index">
-          <tr v-bind:class="response.data[gkey].state">
+          <tr v-bind:class="response.data[gkey].state" class="darken-2 white-text">
 									<td>{{ gkey }}</td>
-									<td class="right"><a class="btn-flat waves-effect waves-light white modal-trigger tooltipped" href="#{{ gkey }}" data-position="left" data-delay="50" data-tooltip="switch stack {{ gkey }}" onClick="$('#{{ gkey }}').openModal();"><i class="material-icons">autorenew</i></a></td>
+									<td class="right"><a class="btn-flat waves-effect waves-light modal-trigger tooltipped" href="#{{ gkey }}" data-position="left" data-delay="50" data-tooltip="switch stack {{ gkey }}" onClick="$('#{{ gkey }}').openModal();"><i class="material-icons">autorenew</i></a></td>
           </tr>
 				</tbody>
 
@@ -108,39 +108,7 @@
     </div>
   </div>
 
-  <footer class="page-footer orange">
-							<!--
-    <div class="container">
-      <div class="row">
-
-        <div class="col l6 s12">
-          <h5 class="white-text">Company Bio</h5>
-          <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
-
-
-        </div>
-        <div class="col l3 s12">
-          <h5 class="white-text">Settings</h5>
-          <ul>
-            <li><a class="white-text" href="#!">Link 1</a></li>
-            <li><a class="white-text" href="#!">Link 2</a></li>
-            <li><a class="white-text" href="#!">Link 3</a></li>
-            <li><a class="white-text" href="#!">Link 4</a></li>
-          </ul>
-        </div>
-        <div class="col l3 s12">
-          <h5 class="white-text">Connect</h5>
-          <ul>
-            <li><a class="white-text" href="#!">Link 1</a></li>
-            <li><a class="white-text" href="#!">Link 2</a></li>
-            <li><a class="white-text" href="#!">Link 3</a></li>
-            <li><a class="white-text" href="#!">Link 4</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    -->
+  <footer class="page-footer pink">
 
     <div class="footer-copyright">
       <div class="container">

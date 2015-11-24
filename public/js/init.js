@@ -47,9 +47,8 @@ var vm = new Vue({
 				var pdata = {"name": name, "state": state};
         this.$http.put('/api/group', pdata, function (resp, status, request) {
           // set data on vm
-          //this.$set('response', data)
-		      console.log(JSON.stringify(resp));
           this.$set('response', resp)
+		      console.log(JSON.stringify(resp));
         }).error(function (resp, status, request) {
           // handle error
 					console.log(status);
