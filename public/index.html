@@ -8,7 +8,7 @@
 
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
 
@@ -33,6 +33,9 @@
     <div class="container">
       <br><br>
       <h1 class="header center orange-text">flick the switch!</h1>
+			  <!--[if lt IE 8]>
+			<div class="row center pink-text"><h2>You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</h2></div>
+        <![endif]-->
 			<div class="row center">
         <h5 class="header col s12 light">pick a stack to switch</h5>
       </div>
@@ -55,7 +58,7 @@
         <tbody v-for="(gkey, group) in response.data" track-by="$index">
           <tr v-bind:class="response.data[gkey].state" class="darken-2 white-text">
 									<td>{{ gkey }}</td>
-									<td class="right"><a class="btn-flat waves-effect waves-light modal-trigger tooltipped" href="#{{ gkey }}" data-position="left" data-delay="50" data-tooltip="switch stack {{ gkey }}" onClick="$('#{{ gkey }}').openModal();"><i class="material-icons">autorenew</i></a></td>
+									<td v-bind:class="response.data[gkey].state" class="right lighten-3"><a class="btn-flat waves-effect waves-light modal-trigger tooltipped" href="#{{ gkey }}" data-position="left" data-delay="50" data-tooltip="switch stack {{ gkey }}" onClick="$('#{{ gkey }}').openModal();"><i class="material-icons">autorenew</i></a></td>
           </tr>
 				</tbody>
 
@@ -110,9 +113,43 @@
 
   <footer class="page-footer pink">
 
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+        </div>
+					<!--
+          <h5 class="white-text">Company Bio</h5>
+          <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
+
+
+        <div class="col l3 s12">
+          <h5 class="white-text">Settings</h5>
+          <ul>
+            <li><a class="white-text" href="#!">Link 1</a></li>
+            <li><a class="white-text" href="#!">Link 2</a></li>
+            <li><a class="white-text" href="#!">Link 3</a></li>
+            <li><a class="white-text" href="#!">Link 4</a></li>
+          </ul>
+        </div>
+        <div class="col l3 s12">
+          <h5 class="white-text">Connect</h5>
+          <ul>
+            <li><a class="white-text" href="#!">Link 1</a></li>
+            <li><a class="white-text" href="#!">Link 2</a></li>
+            <li><a class="white-text" href="#!">Link 3</a></li>
+            <li><a class="white-text" href="#!">Link 4</a></li>
+          </ul>
+        </div>
+       -->
+      </div>
+    </div>
+
     <div class="footer-copyright">
       <div class="container">
-							Made with <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>, <a class="orange-text text-lighten-3" href="https://gin-gonic.github.io/gin/">Gin</a> and <a class="orange-text text-lighten-3" href="http://vuejs.org/">Vuejs</a>.
+							Made with 
+							<a class="orange-text text-lighten-3" href="https://gin-gonic.github.io/gin/">Gin</a>,
+							<a class="orange-text text-lighten-3" href="http://vuejs.org/">Vuejs</a> and
+							<a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>,.
       </div>
     </div>
   </footer>
