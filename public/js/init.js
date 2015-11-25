@@ -39,7 +39,7 @@ Vue.directive('pooler', {
 var vm = new Vue({
 	el: '#app',
 		data: {
-			response: ''
+						response: ''
 		},
 		methods: {
 			updateGroup: function(name, state) {
@@ -62,6 +62,7 @@ var vm = new Vue({
       this.$http.get('/api/group', function (resp, status, request) {
           // set data on vm
           this.$set('response', resp)
+          this.$set('user', resp.user)
       }).error(function (resp, status, request) {
           // handle error
 					console.log(status)

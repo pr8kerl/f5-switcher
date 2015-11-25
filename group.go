@@ -129,7 +129,7 @@ func showGroup(c *gin.Context) {
 		}
 
 	} // end range cfg.Groups
-	c.JSON(http.StatusOK, gin.H{"data": cfg.Groups})
+	c.JSON(http.StatusOK, gin.H{"data": cfg.Groups, "user": currentUser})
 
 }
 

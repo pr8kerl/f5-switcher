@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	bindaddress = "127.0.0.1:5000"
+	bindaddress string = "127.0.0.1:5000"
 	f5          *F5.Device
-	appRoot     = "/public"
+	appRoot     string = "/public"
+	currentUser string = "luser"
 )
 
 func init() {
@@ -42,6 +43,7 @@ func main() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(SetJellyBeans())
+	r.Use(GetUser)
 
 	//r.GET("/", index)
 	r.StaticFS(appRoot, http.Dir("public/"))
@@ -61,10 +63,17 @@ func index(c *gin.Context) {
 }
 
 func SetJellyBeans() gin.HandlerFunc {
-	// Do some initialization logic here
-	// Foo()
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("X-Powered-By", "Black Jelly Beans")
 		c.Next()
 	}
+}
+
+func GetUser(c *gin.Context) {
+	thisUser, exists := c.Get("X-Remote-User")
+	if exists {
+		currentUser = thisUser.(string)
+		fmt.Printf("current user: %s\n", currentUser)
+	}
+	c.Next()
 }
