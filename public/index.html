@@ -13,9 +13,13 @@
 </head>
 
 <body>
+  <div id="app">
   <nav class="grey darken-2" role="navigation">
 					<div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">
 						<i class="material-icons">autorenew</i></a>
+      <ul id="willkommen" class="right">
+        <li>welcome {{ response.user }}</li>
+      </ul>
 									<!--
       <ul class="right hide-on-med-and-down">
         <li><a href="#">Navbar Link</a></li>
@@ -30,14 +34,14 @@
   </nav>
 
   <div class="section no-pad-bot" id="index-banner">
-    <div id="app" class="container">
+    <div class="container">
       <br><br>
       <h1 class="header center orange-text">flick the switch!</h1>
 			  <!--[if lt IE 8]>
 			<div class="row center pink-text"><h2>You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</h2></div>
         <![endif]-->
 			<div class="row center">
-							<h5 class="header col s12 light">hello {{ response.user }}, pick a stack to switch</h5>
+							<h5 class="header col s12 light">pick a stack to switch</h5>
       </div>
 
 
@@ -106,9 +110,7 @@
   </div>
 
 
-    <div class="section">
-
-    </div>
+  </div>
   </div>
 
   <footer class="page-footer pink">
