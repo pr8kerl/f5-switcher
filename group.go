@@ -22,10 +22,14 @@ func putGroup(c *gin.Context) {
 	}
 
 	group := cfg.Groups[json.Name]
-	log.Printf("debug putGroup processing group %s, setting to %s\n", group, json.State)
+	if debug {
+		log.Printf("debug putGroup processing group %s, setting to %s\n", group, json.State)
+	}
 
 	for pkey, pool := range group.Pools {
-		log.Printf("processing pool %s\n", pkey)
+		if debug {
+			log.Printf("debug putGroup processing pool %s\n", pkey)
+		}
 
 		for _, member := range pool.Blue {
 
@@ -61,11 +65,15 @@ func putGroup(c *gin.Context) {
 
 func showGroup(c *gin.Context) {
 
-	log.Printf("processing groups\n")
+	if debug {
+		log.Printf("debug processing groups\n")
+	}
 
 	for gkey, group := range cfg.Groups {
 
-		log.Printf("processing group %s\n", gkey)
+		if debug {
+			log.Printf("debug processing group %s\n", gkey)
+		}
 		var gblue int = 0
 		var ggreen int = 0
 
@@ -73,7 +81,9 @@ func showGroup(c *gin.Context) {
 
 		for pkey, pool := range group.Pools {
 
-			log.Printf("processing pool %s\n", pkey)
+			if debug {
+				log.Printf(" debug processing pool %s\n", pkey)
+			}
 			var pblue int = 0
 			var pgreen int = 0
 
@@ -114,9 +124,7 @@ func showGroup(c *gin.Context) {
 			}
 			if (pblue > 0) && (pgreen > 0) {
 				group.Pools[pkey] = group.Pools[pkey].SetState("orange")
-				//c.JSON(http.StatusInternalServerError, gin.H{"status": 500, "pool state": state})
 			}
-			//			c.JSON(http.StatusOK, gin.H{"status": 200, "pool state": state})
 
 		} // end range group.Pools
 		if gblue > 0 {
@@ -132,10 +140,3 @@ func showGroup(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": cfg.Groups, "user": currentUser})
 
 }
-
-/*
-type Poolstate struct {
-	MemberCount int
-	Status      string
-}
-*/

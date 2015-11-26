@@ -4,16 +4,19 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/pr8kerl/f5-switcher/F5"
+	"io"
 	"net/http"
 	"os"
-	//	"time"
+	"time"
 )
 
 var (
-	bindaddress string = "127.0.0.1:5000"
-	f5          *F5.Device
-	appRoot     string = "/public"
-	currentUser string = "luser"
+	bindaddress          string = "127.0.0.1:5000"
+	f5                   *F5.Device
+	appRoot              string = "/public"
+	currentUser          string = "luser"
+	currentUserFirstName string = "luser"
+	debug                bool   = false
 )
 
 func init() {
@@ -40,7 +43,7 @@ func main() {
 	r := gin.New()
 
 	// Global middlewares
-	r.Use(gin.Logger())
+	r.Use(MyLogger(gin.DefaultWriter))
 	r.Use(gin.Recovery())
 	r.Use(SetJellyBeans())
 	r.Use(GetUser)
@@ -70,10 +73,41 @@ func SetJellyBeans() gin.HandlerFunc {
 }
 
 func GetUser(c *gin.Context) {
-	thisUser, exists := c.Get("X-Remote-User")
-	if exists {
-		currentUser = thisUser.(string)
+	luser := c.Request.Header.Get("X-Remote-User")
+	if len(luser) > 0 {
+		currentUser = luser
 		fmt.Printf("current user: %s\n", currentUser)
 	}
 	c.Next()
+}
+
+func MyLogger(out io.Writer) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Start timer
+		start := time.Now()
+		path := c.Request.URL.Path
+
+		// Process request
+		c.Next()
+
+		// Stop timer
+		end := time.Now()
+		latency := end.Sub(start)
+
+		clientIP := c.ClientIP()
+		method := c.Request.Method
+		statusCode := c.Writer.Status()
+		comment := c.Errors.ByType(gin.ErrorTypePrivate).String()
+
+		fmt.Fprintf(out, "[GIN] %v | %3d | %13v | %s | %s | %-7s %s\n%s",
+			end.Format("2006/01/02 - 15:04:05"),
+			statusCode,
+			latency,
+			clientIP,
+			currentUser,
+			method,
+			path,
+			comment,
+		)
+	}
 }
